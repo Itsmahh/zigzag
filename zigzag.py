@@ -23,12 +23,11 @@ def find_circle(frame):
 
             cv2.circle(thresh, (x, y), int(r), (255, 255, 255), -1)
 
-    cv2.imshow("frame",frame)
-    cv2.imshow("thresh",thresh)
+    # cv2.imshow("frame",frame)
+    # cv2.imshow("thresh",thresh)
     cv2.waitKey(1)
     return x ,y
 
-    # return None,None
 
 
 # def find_circle(frame):
@@ -50,10 +49,12 @@ def find_circle(frame):
 def way_detection(frame):
     frame_gray =  cv2.cvtColor(frame,cv2.COLOR_RGB2GRAY)
     frame_blur = cv2.GaussianBlur(frame_gray,(3,3),1)
-    frame_canny = cv2.Canny(frame_blur, 20,100)
-    kernel = np.ones((5, 5), np.uint8)
-    frame_dilate = cv2.dilate(frame_canny,kernel,iterations=2)
-    lines = cv2.HoughLinesP(frame_dilate,1,np.pi/180,50,minLineLength=20,maxLineGap=5)
+    frame_canny = cv2.Canny(frame_blur, 30,100)
+
+    # kernel = np.ones((3, 3), np.uint8)
+    # frame_dilate = cv2.dilate(frame_canny,kernel,iterations=2)
+    lines = cv2.HoughLinesP(frame_canny,1,np.pi/180,50,minLineLength=20,maxLineGap=5)
+
     if lines is not None:
         for line in lines :
             x1,y1,x2,y2 = line
@@ -63,7 +64,9 @@ def way_detection(frame):
             elif -50<angle<-20:
                 cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-    cv2.imshow("thresh",frame_dilate)
+    cv2.imshow("frame_canny",frame_canny)
+    cv2.imshow("frame",frame)
+
     cv2.waitKey(1)
     return lines
 
@@ -120,7 +123,7 @@ def run_game():
         new_frame = cv2.cvtColor(new_frame,cv2.COLOR_BGR2RGB)
         x, y = find_circle(new_frame)
 
-        # lines = way_detection(new_frame)
+        lines = way_detection(new_frame)
 
         if x is not None and y is not None:
             cv2.circle(new_frame, (x, y), 3, (0, 0, 255), -1)
